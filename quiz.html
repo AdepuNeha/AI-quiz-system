@@ -1,0 +1,224 @@
+
+
+
+
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Quiz</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .quiz-container {
+            display: flex;
+            height: 100vh;
+        }
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .video-feed {
+            border: 2px solid #000;
+            padding: 10px;
+            text-align: center;
+        }
+        .right-panel {
+            flex: 2;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        footer {
+            text-align: center;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            padding: 10px 0;
+            background-color: #f1f1f1;
+            margin-top: 20px;
+        }
+        #time-left {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        #cheat-warning {
+            color: red;
+            font-weight: bold;
+            display: none;
+        }
+        #camera-message {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <div class="left-panel">
+            <h3>Face Cam</h3>
+            <div id="camera-status" class="video-feed">
+                <video id="video" width="320" height="240" autoplay muted></video>
+                <p id="camera-message">Align your face in front of the camera</p>
+                <p id="cheat-warning">Warning: You are looking away!</p>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <h2>AI Quiz</h2>
+            <p id="time-left">Time Left: 5:00</p>
+            <div class="quiz-content">
+                <form id="quiz-form" action="{{ url_for('quiz') }}" method="POST">
+                    <!-- Hidden fields for name and email -->
+                     <input type="hidden" name="name" value="{{ session.get('name') }}">
+                    <input type="hidden" name="email" value="{{ session.get('email') }}">
+
+                    <!-- Questions -->
+                     - <div class="form-group">
+                        <p>Question 1: What does AI stand for?</p>
+                        <label><input type="radio" name="q1" value="A"> A) Artificial Intelligence</label><br>
+                        <label><input type="radio" name="q1" value="B"> B) Automated Interaction</label><br>
+                        <label><input type="radio" name="q1" value="C"> C) Advanced Information</label>
+                    </div> 
+
+                    <div class="form-group">
+                        <p>Question 2: Which programming language is commonly used for AI?</p>
+                        <label><input type="radio" name="q2" value="A"> A) Python</label><br>
+                        <label><input type="radio" name="q2" value="B"> B) Java</label><br>
+                        <label><input type="radio" name="q2" value="C"> C) C++</label>
+                    </div> 
+
+                    <div class="form-group">
+                        <p>Question 3: Machine Learning is a subset of what?</p>
+                        <label><input type="radio" name="q3" value="A"> A) Artificial Intelligence</label><br>
+                        <label><input type="radio" name="q3" value="B"> B) Computer Science</label><br>
+                        <label><input type="radio" name="q3" value="C"> C) Mathematics</label>
+                    </div> 
+
+                    <div class="form-group">
+                        <p>Question 4: What is Natural Language Processing?</p>
+                        <label><input type="radio" name="q4" value="A"> A) Image processing</label><br>
+                        <label><input type="radio" name="q4" value="B"> B) Language interaction between computers and humans</label><br>
+                        <label><input type="radio" name="q4" value="C"> C) Database management</label>
+                    </div> 
+
+                    <div class="form-group">
+                        <p>Question 5: Which company developed AlphaGo?</p>
+                        <label><input type="radio" name="q5" value="A"> A) OpenAI</label><br>
+                        <label><input type="radio" name="q5" value="B"> B) Google DeepMind</label><br>
+                        <label><input type="radio" name="q5" value="C"> C) IBM</label>
+                    </div>
+
+                    <button type="submit" class="button">Submit Quiz</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2024 Copyright: Abc</p>
+    </footer>
+
+    <script>
+        let cheatWarning = document.getElementById('cheat-warning');
+        let cameraMessage = document.getElementById('camera-message');
+        let timeLeft = document.getElementById('time-left');
+        let video = document.getElementById('video');
+        let tabSwitchCount = 0;
+        const maxTabSwitches = 1;
+
+        // Timer for the quiz
+        let totalTime = 300; // 5 minutes
+        function startTimer() {
+            const interval = setInterval(() => {
+                totalTime--;
+                const minutes = Math.floor(totalTime / 60);
+                const seconds = totalTime % 60;
+                timeLeft.textContent = `Time Left: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+                if (totalTime <= 0) {
+                    clearInterval(interval);
+                    document.querySelector('form').submit();
+                }
+            }, 1000);
+        }
+        window.onload = startTimer;
+
+        // Face detection logic
+        async function setupCamera() {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+            video.srcObject = stream;
+
+            video.onloadedmetadata = () => {
+                video.play();
+                startFaceDetection();
+            };
+        }
+
+        async function startFaceDetection() {
+            await faceapi.nets.tinyFaceDetector.loadFromUri('/static/models');
+            await faceapi.nets.faceLandmark68Net.loadFromUri('/static/models');
+            await faceapi.nets.faceRecognitionNet.loadFromUri('/static/models');
+
+            setInterval(async () => {
+                const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
+                console.log('Detection Count:', detections.length); // Debugging log
+
+                if (detections.length > 0) {
+                    cameraMessage.textContent = "Face detected.";
+                    cheatWarning.style.display = 'none'; // Hide warning
+                } else {
+                    cameraMessage.textContent = "No face detected. Please align your face in front of the camera.";
+                    cheatWarning.style.display = 'block'; // Show warning
+                    cheatWarning.textContent = 'Warning: You are looking away!'; // Display alert
+                    
+                    // Use alert for immediate feedback
+                    alert('Warning: You are looking away!'); // Debugging alert
+                }
+            }, 1000); // Check every second
+        }
+
+        setupCamera();
+
+        // Tab visibility change detection
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) {
+                tabSwitchCount++;
+                console.log("Tab switched:", tabSwitchCount); // Debugging log
+
+                if (tabSwitchCount === 1) {
+                    cheatWarning.style.display = 'block';
+                    cheatWarning.textContent = 'Warning: If you switch tabs again, your quiz will be submitted!';
+                } else if (tabSwitchCount > maxTabSwitches) {
+                    document.getElementById('quiz-form').submit();
+                }
+            }
+        });
+    </script>
+</body>
+</html> 
+
+

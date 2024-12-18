@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="menu-icon" onclick="toggleMenu()">
+                &#9776; <!-- The hamburger icon -->
+            </div>
+            <div id="menu" class="menu-items">
+                <ul>
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('register') }}">Register</a></li>
+                    <li><a href="{{ url_for('capture') }}">Face Capture</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Welcome To Quiz App</h1>
+        <div class="button-container">
+            <a href="{{ url_for('register') }}" class="button">REGISTER FACE</a>
+            <p>Or</p>
+            <a href="{{ url_for('signin') }}" class="button">START QUIZ</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2024 Copyright: Abc</p>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            var menu = document.getElementById("menu");
+            if (menu.style.display === "block") {
+                menu.style.display = "none";
+            } else {
+                menu.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>

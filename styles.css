@@ -1,0 +1,273 @@
+/* General Reset and Body Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+    background-color: #f0f0f0;
+}
+
+/* Header Styles */
+header {
+    background-color: #3f51b5;
+    color: white;
+    padding: 10px 20px;
+}
+
+nav {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.menu-icon {
+    font-size: 30px;
+    cursor: pointer;
+    color: white;
+    padding: 15px;
+    margin-right: 10px;
+}
+
+/* Hide Menu Items by Default */
+.menu-items {
+    display: none;
+    background-color: #3f51b5;
+    position: absolute;
+    top: 50px;
+    width: 100%;
+    left: 0;
+    z-index: 1;
+}
+
+.menu-items ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-items ul li {
+    text-align: center;
+    padding: 10px;
+}
+
+.menu-items ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+
+.menu-items ul li:hover {
+    background-color: #32408f;
+}
+
+/* Footer Styles */
+footer {
+    background-color: #3f51b5;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+}
+
+/* Homepage Container Styles */
+.container {
+    text-align: center;
+    background-color: #fff;
+    padding: 40px;
+    margin: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 50%;
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.button-container {
+    margin-top: 20px;
+}
+
+p {
+    margin: 20px 0;
+    font-size: 1.2em;
+}
+
+.button {
+    text-decoration: none;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    margin: 10px;
+    background-color: #3f51b5;
+    color: white;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #32408f;
+}
+
+.button:active {
+    transform: scale(0.98);
+}
+
+/* Face Registration Form Styles */
+.form-container {
+    text-align: center;
+    background-color: #fff;
+    padding: 40px;
+    margin: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 50%;
+}
+
+h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="date"] {
+    width: calc(50% - 20px);
+    padding: 10px;
+    margin: 0 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+input[type="radio"] {
+    margin-right: 5px;
+}
+
+button {
+    text-decoration: none;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    margin-top: 20px;
+    background-color: #3f51b5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #32408f;
+}
+
+
+/* Additional styles for Face Capture page */
+.capture-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 40px;
+    margin: auto;
+    background-color: #fff;
+    width: 80%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.webcam-section {
+    flex: 1;
+    text-align: center;
+}
+
+.webcam-box {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: 20px auto;
+    background-color: #f0f0f0;
+    border: 2px dashed red;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.face-box {
+    position: absolute;
+    border: 2px dashed red;
+    width: 240px;
+    height: 240px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: red;
+    text-align: center;
+    font-size: 1em;
+}
+
+.capture-button {
+    padding: 10px 20px;
+    font-size: 1em;
+    background-color: #3f51b5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.capture-button:hover {
+    background-color: #32408f;
+}
+
+.instruction-panel {
+    flex: 1;
+    text-align: left;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.instruction-panel h3 {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.instruction-panel ol {
+    margin-bottom: 20px;
+}
+
+/* Navbar dropdown */
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .menu-items {
+        display: none;
+    }
+
+    .menu-icon {
+        display: block;
+    }
+}

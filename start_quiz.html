@@ -1,0 +1,144 @@
+
+
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Quiz</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>  
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        .video-container {
+            width: 40%;
+        }
+        .form-container {
+            width: 55%;
+            margin-left: 20px;
+        }
+        #start-btn {
+            background-color: grey;
+            cursor: not-allowed;
+        }
+        #start-btn.enabled {
+            background-color: #3f51b5;
+            cursor: pointer;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="menu-icon" onclick="toggleMenu()">
+                &#9776;
+            </div>
+            <div id="menu" class="menu-items">
+                <ul>
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('register') }}">Register</a></li>
+                    <li><a href="{{ url_for('capture') }}">Face Capture</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="video-container">
+            <h3>Face Recognition</h3>
+            <video id="video" width="320" height="240" autoplay muted></video>
+            <p id="face-status" style="color: red;">Waiting for face recognition...</p>
+        </div>
+
+        <div class="form-container">
+            <h2>AI Quiz Instructions</h2>
+            <p><strong>Instructions:</strong></p>
+            <ul>
+                <li>The quiz will have 5 questions.</li>
+                <li>You will have 5 minutes to complete the quiz.</li>
+                <li>Each question will have multiple-choice answers.</li>
+                <li>Read each question carefully and choose the best answer.</li>
+            </ul>
+            <div class="button-container">
+                <button type="button" id="start-btn" class="button" disabled>Start Quiz</button>
+                <a href="{{ url_for('index') }}" class="button">Cancel</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2024 Copyright: Abc</p>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            var menu = document.getElementById("menu");
+            menu.style.display = (menu.style.display === "block") ? "none" : "block";
+        }
+
+        const video = document.getElementById('video');
+        const startQuizButton = document.getElementById('start-btn');
+        const faceStatus = document.getElementById('face-status');
+
+        async function setupCamera() {
+            try {
+                // Request access to the camera
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;  // Set video stream to the video element
+            } catch (err) {
+                console.error('Error accessing the camera: ', err);  // Handle camera access errors
+            }
+        }
+
+        async function loadModel() {
+            // Load BlazeFace model for face detection
+            return await blazeface.load();
+        }
+
+        async function detectFace(model) {
+            // Detect faces from the video stream
+            const predictions = await model.estimateFaces(video, false);
+
+            if (predictions.length > 0) {
+                // If a face is detected, enable the start quiz button
+                startQuizButton.disabled = false;
+                faceStatus.innerText = 'Face recognized!';
+                faceStatus.style.color = 'green';
+                startQuizButton.classList.add('enabled');
+            } else {
+                // If no face is detected, keep the button disabled
+                startQuizButton.disabled = true;
+                faceStatus.innerText = 'Waiting for face recognition...';
+                faceStatus.style.color = 'red'; 
+                startQuizButton.classList.remove('enabled');
+            }
+            requestAnimationFrame(() => detectFace(model));  // Continuously detect faces
+        }
+
+        async function startFaceRecognition() {
+            await setupCamera();  // Set up the camera
+            const model = await loadModel();  // Load BlazeFace model
+            video.play();  // Start the video stream
+            detectFace(model);  // Start face detection
+        }
+// Add an event listener for the Start Quiz button
+startQuizButton.addEventListener('click', function() {
+        window.location.href = "{{ url_for('quiz') }}";  // Redirect to the quiz page
+    });
+        startFaceRecognition();  // Initialize face recognition when the page loads
+    </script>
+
+</body>
+</html>   

@@ -1,0 +1,125 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Capture</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="menu-icon" onclick="toggleMenu()">
+                &#9776; <!-- The hamburger icon -->
+         </div>
+            <div id="menu" class="menu-items">
+                <ul>
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('register') }}">Register</a></li>
+                    <li><a href="{{ url_for('capture') }}">Face Capture</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="capture-container">
+        <div class="webcam-section">
+            <h3>Camera View</h3>
+            <video id="video" width="300" height="300" autoplay></video>
+            <canvas id="canvas" style="display:none;"></canvas>
+            <button id="capture-btn" onclick="captureImage()">Take Picture</button>
+            <div id="captured-images"></div>
+        </div>
+
+        <div class="instruction-panel">
+            <h3>Instruction Panel</h3>
+            <p><strong>Webcam Ready</strong></p>
+            <ol>
+                <li>Put your face inside the square box.</li>
+                <li>Press the camera icon to take a picture.</li>
+                <li>Align your face directly in front of the camera.</li>
+                <li>Ensure the lighting is balanced—not too bright or too dark.</li>
+                <li>Press "Submit" after capturing  1 image.</li>
+            </ol>
+            <button id="submit-btn" onclick="submitImages()" disabled>Submit</button>
+        </div>
+    </div> 
+
+    <!-- Success Message -->
+     <div id="success-message" style="display: none; text-align: center; margin-top: 20px;">
+        <h3>You have successfully registered!</h3>
+        <p>Now go back to the homepage and start the quiz.</p>
+        <a href="{{ url_for('index') }}" class="button">Go Back to Home</a>
+    </div>
+
+    <footer>
+        <p>© 2024 Copyright: Abc</p>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            var menu = document.getElementById("menu");
+            if (menu.style.display === "block") {
+                menu.style.display = "none";
+            } else {
+                menu.style.display = "block";
+            }
+        }
+
+        let capturedImages = [];
+        const maxImages = 1;
+
+        // Access the webcam
+        const video = document.getElementById('video');
+        navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+            video.srcObject = stream;
+        });
+
+        function captureImage() {
+            if (capturedImages.length < maxImages) {
+                const canvas = document.getElementById('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                const dataURL = canvas.toDataURL('image/png');
+                capturedImages.push(dataURL);
+
+                const img = document.createElement('img');
+                img.src = dataURL;
+                img.width = 100;
+                img.height = 100;
+                document.getElementById('captured-images').appendChild(img);
+
+                if (capturedImages.length === maxImages) {
+                    document.getElementById('submit-btn').disabled = false;
+                }
+            } else {
+                alert("You have already captured 1 images.");
+            }
+        }
+
+        function submitImages() {
+            fetch('/capture', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ images: capturedImages })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Hide the capture section and show the success message
+                    document.querySelector('.capture-container').style.display = 'none';
+                    document.getElementById('success-message').style.display = 'block';
+                } else {
+                    alert("Failed to submit images.");
+                }
+            });
+        } 
+     </script>   
+</body>
+</html>   
+   
+
+   
